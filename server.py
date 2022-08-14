@@ -9,12 +9,9 @@ class Server:
       # 初始化logger 配置
       OceanLogger()
 
-    async def start(self):
-      await asyncio.gather(
-        MessagePullRedis().read_message_from_redis())
-
-        # OceanWebSocketServer().start()
-
+    def start(self):
+      MessagePullRedis().start()
+      OceanWebSocketServer().start()
 
 if __name__ == "__main__":
     server = Server()

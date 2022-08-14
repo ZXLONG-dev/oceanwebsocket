@@ -1,4 +1,5 @@
 # coding=utf-8
+from asyncore import loop
 from aiohttp import web
 from loguru import logger
 import aiohttp
@@ -12,7 +13,7 @@ class OceanWebSocketServer():
       PORT = 8080
       app = web.Application()
       app.router.add_get('/', lambda req: self.websocket_handler(req))
-      web.run_app(app, host=WS_HOST, port=PORT)
+      web.run_app(app, host=WS_HOST, port=PORT, loop=asyncio.get_event_loop())
 
     @logger.catch
     async def websocket_handler(self, request):
