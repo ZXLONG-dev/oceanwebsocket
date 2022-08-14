@@ -1,12 +1,13 @@
 # coding=utf-8
-from asyncore import loop
 from aiohttp import web
 from loguru import logger
 import aiohttp
-from message.message_pull_redis import *
+from message.message_manager import *
 import asyncio
+from utils.singleton import *
 
 
+@singleton
 class OceanWebSocketServer():
     def start(self):
       WS_HOST = "0.0.0.0"
@@ -19,17 +20,15 @@ class OceanWebSocketServer():
     async def websocket_handler(self, request):
       ws = web.WebSocketResponse(autoclose=False)
       await ws.prepare(request)
+      await ws.send_str("hello world\n")
 
       async for msg in ws:
           if msg.type == aiohttp.WSMsgType.TEXT:
-              if msg.data == 'close':
-                  await ws.close()
-              else:
-                  await ws.send_str(msg.data + '/answer')
+            message = json.loads(msg.data)
+            await message_manager.processing(ws, message)
           elif msg.type == aiohttp.WSMsgType.ERROR:
-              print('ws connection closed with exception %s' %
-                    ws.exception())
+              await ws.close()
+              logger.error(f"ws connection exception {ws.exception()}")
 
-      print('websocket connection closed')
 
-      return ws
+oceanwebsocketserver = OceanWebSocketServer()

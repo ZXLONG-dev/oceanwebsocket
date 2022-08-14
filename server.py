@@ -1,8 +1,9 @@
 # coding=utf-8
 from oceanwebsocket.oceanwebsocket import *
 from utils.oceanlogger import OceanLogger
-from message.message_pull_redis import *
+from message.message_manager import *
 import asyncio
+
 
 class Server:
     def __init__(self):
@@ -10,8 +11,9 @@ class Server:
       OceanLogger()
 
     def start(self):
-      MessagePullRedis().start()
-      OceanWebSocketServer().start()
+      message_manager.listen()
+      oceanwebsocketserver.start()
+
 
 if __name__ == "__main__":
     server = Server()
