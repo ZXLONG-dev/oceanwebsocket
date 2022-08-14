@@ -8,6 +8,7 @@ async def keep_connect(ws):
     while True:
         content = {}
         content["opt"] = "keep_connect"
+        content["auth"] = "connect_auth"
         content["value"] = keep_times
 
         await ws.send_str(json.dumps(content))
@@ -18,21 +19,21 @@ async def keep_connect(ws):
 async def connect(ws):
     content = {}
     content["opt"] = "connect"
-    content["auth"] = ""
+    content["auth"] = "connect_auth"
     await ws.send_str(json.dumps(content))
 
 
 async def main():
     async with aiohttp.ClientSession() as session:
-       async with session.ws_connect('ws://127.0.0.1:8080') as ws:
-           await connect(ws)
-           asyncio.create_task(keep_connect(ws))
-           async for msg in ws:
-               print(f'{msg}')
-               if msg.type == aiohttp.WSMsgType.TEXT:
-                    if msg.data == 'close cmd':
-                        await ws.close()
-                        break
+        async with session.ws_connect('ws://127.0.0.1:8080') as ws:
+            await connect(ws)
+            asyncio.create_task(keep_connect(ws))
+            async for msg in ws:
+                print(f'{msg}')
+                if msg.type == aiohttp.WSMsgType.TEXT:
+                        if msg.data == 'close cmd':
+                            await ws.close()
+                            break
                 elif msg.type == aiohttp.WSMsgType.ERROR:
                     break
 

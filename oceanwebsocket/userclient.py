@@ -3,14 +3,24 @@ from loguru import logger
 
 
 class UserClient:
-    def __init__(self, client_ws, ip, version):
+    def __init__(self, client_ws, user_key):
         self.client_ws = client_ws
-        self.version = version
-        self.ip = ip
+        self.user_key = user_key
+
+    def check_vaild(self) -> bool:
+        return True
 
     @logger.catch
-    async def send_content(self, content):
+    async def keep_connect(self):
+        await self.client_ws.send_json({"opt": "connect_return"})
+
+    @logger.catch
+    async def send_content(self, content: str):
         await self.client_ws.send_str(content)
+
+    @logger.catch
+    async def send_content_json(self, content: dict):
+        await self.client_ws.send_json(content)
 
     @logger.catch
     async def disconnect(self):
