@@ -2,6 +2,7 @@
 from aiohttp import web
 from loguru import logger
 import aiohttp
+from message.message_pull_redis import *
 import asyncio
 
 
@@ -13,8 +14,9 @@ class OceanWebSocketServer():
       app.router.add_get('/', lambda req: self.websocket_handler(req))
       web.run_app(app, host=WS_HOST, port=PORT)
 
+    @logger.catch
     async def websocket_handler(self, request):
-      ws = web.WebSocketResponse()
+      ws = web.WebSocketResponse(autoclose=False)
       await ws.prepare(request)
 
       async for msg in ws:
