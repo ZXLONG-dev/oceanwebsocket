@@ -73,7 +73,10 @@ class MessageManager(object):
             block=0,
             noack=True)
 
-        logger.debug(f"{json.dumps(result[0][1][0][1])}")
+        # result [[b'oceanmonitor_stream', [(b'1660573563768-0', {b'test2': b'mnm'})]]]
+        # dict byte to dict str
+        result = {key.decode(): val.decode() for key, val in result[0][1][0][1].items()}
+        logger.debug(f"{json.dumps(result)}")
 
         for key, user_client in self.connect_client_list.items():
           await user_client.send_content_json(result)
